@@ -15,6 +15,7 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "dns": "^0.2.2",
     "nodemon": "^2.0.4"
   }
 }
