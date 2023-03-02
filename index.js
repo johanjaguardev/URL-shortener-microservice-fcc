@@ -1,7 +1,6 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const dns = require("dns");
 const app = express();
 const bodyParser = require("body-parser");
 
@@ -27,16 +26,14 @@ app.post("/api/shorturl", (req, res) => {
   const shortUrl = urls.length + 1;
 
   const urlObject = new URL(originalUrl);
-  const hostname = urlObject.hostname;
 
-  dns.lookup(hostname, (err, address) => {
-    if (err) {
-      res.json({ error: "invalid url" });
-    } else {
-      urls.push({ originalUrl, shortUrl });
-      res.json({ original_url: originalUrl, short_url: shortUrl });
-    }
-  });
+  if (!urlObject.protocol.startsWith("http")) {
+    res.json({ error: "invalid url" });
+    return;
+  }
+
+  urls.push({ originalUrl, shortUrl });
+  res.json({ original_url: originalUrl, short_url: shortUrl });
 });
 
 app.get("/api/shorturl/:shortUrl", (req, res) => {
@@ -49,6 +46,7 @@ app.get("/api/shorturl/:shortUrl", (req, res) => {
     res.status(404).send("URL not found");
   }
 });
+
 app.listen(port, function () {
   console.log(`Listening on port ${port}`);
 });
